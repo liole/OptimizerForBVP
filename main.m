@@ -9,7 +9,7 @@ method = 'constant'; % linear or constant
 bcType = [Utils.Dirichlet; Utils.Neumann];
 d = [0 1]; % boundary condition values
 
-q = Problem(b0, j, optO, method, bcType, d);
+q = ProblemAM(b0, j, optO, method, bcType, d);
 q.optimize(true, true);
 format long
 q.criteria()

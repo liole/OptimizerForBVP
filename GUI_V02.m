@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 22-Dec-2018 15:35:57
+% Last Modified by GUIDE v2.5 22-Dec-2018 17:29:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -100,11 +100,20 @@ end
 bcType = [left_constraint; right_constraint];
 d = [handles.left_d.Value handles.right_d.Value]; % boundary condition values
 
- q = Problem(b0, j, optO, method, bcType, d);
- q.optimize(true, true);
- plot2(q);
-
-
+q = Problem(b0, j, optO, method, bcType, d);
+popup_sel_index = get(handles.problemMethod, 'Value');
+switch popup_sel_index
+    case 1
+        q = Problem(b0, j, optO, method, bcType, d);
+    case 2
+        q = ProblemFDM(b0, j, optO, method, bcType, d);
+    case 3
+        q = ProblemAM(b0, j, optO, method, bcType, d);
+    case 4
+        q = ProblemDDM(b0, j, optO, method, bcType, d);   
+end
+q.optimize(true, true);
+plot2(q);
 
 function jVal_Callback(hObject, eventdata, handles)
 % hObject    handle to jVal (see GCBO)
@@ -227,3 +236,26 @@ function uipanel1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to uipanel1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+% --- Executes on selection change in problemMethod.
+function problemMethod_Callback(hObject, eventdata, handles)
+% hObject    handle to problemMethod (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns problemMethod contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from problemMethod
+
+
+% --- Executes during object creation, after setting all properties.
+function problemMethod_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to problemMethod (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
