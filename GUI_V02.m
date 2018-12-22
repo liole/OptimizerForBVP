@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 22-Dec-2018 17:29:22
+% Last Modified by GUIDE v2.5 22-Dec-2018 19:51:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,8 +77,12 @@ varargout{1} = handles.output;
 function calculate_Callback(hObject, eventdata, handles)
 b0 = [0 0 0];
 
-j = str2double(handles.jVal.String);    % index of u in [r g1 g3 fu]
-optO = str2double(handles.optOVal.String); % index of Omega to minimize on
+j = get(handles.opt_func, 'Value');% index of u in [r g1 g3 fu]
+
+%optO = str2double(handles.optOVal.String); % index of Omega to minimize on
+optO = get(handles.optO_menu, 'Value');
+
+
 method = 'linear';
 
 if (handles.constant.Value == 1)
@@ -112,6 +116,7 @@ switch popup_sel_index
     case 4
         q = ProblemDDM(b0, j, optO, method, bcType, d);   
 end
+
 q.optimize(true, true);
 plot2(q);
 
@@ -251,6 +256,52 @@ function problemMethod_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function problemMethod_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to problemMethod (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in opt_func.
+function opt_func_Callback(hObject, eventdata, handles)
+% hObject    handle to opt_func (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns opt_func contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from opt_func
+
+
+% --- Executes during object creation, after setting all properties.
+function opt_func_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to opt_func (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in optO_menu.
+function optO_menu_Callback(hObject, eventdata, handles)
+% hObject    handle to optO_menu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns optO_menu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from optO_menu
+
+
+% --- Executes during object creation, after setting all properties.
+function optO_menu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to optO_menu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
