@@ -78,10 +78,7 @@ function calculate_Callback(hObject, eventdata, handles)
 b0 = [0 0 0];
 
 j = get(handles.opt_func, 'Value');% index of u in [r g1 g3 fu]
-
-%optO = str2double(handles.optOVal.String); % index of Omega to minimize on
 optO = get(handles.optO_menu, 'Value');
-
 
 method = 'linear';
 
