@@ -27,7 +27,7 @@ classdef Problem < handle
         cacheBVP = {} % save direct problem solutions
     end
     methods
-        function this = Problem(b)
+        function this = Problem(b, j, optO, method, bcType, d)
             if length(b) == 1 && strcmp(this.method, 'linear')
                 b = [b b];
             end
@@ -35,6 +35,13 @@ classdef Problem < handle
             this.b0 = b;
             this.replaceU();
             this.initConstraints();
+            
+            % for GUI
+            this.j = j;
+            this.optO = optO;
+            this.method = method;
+            this.bcType = bcType;
+            this.d = d;
         end
         function replaceU(this)
            params = {this.r, this.g1, this.g3, this.fu}; 
