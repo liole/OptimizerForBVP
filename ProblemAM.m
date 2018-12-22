@@ -3,8 +3,8 @@ classdef ProblemAM < ProblemSensitivityBase
        rPrime = @(x) 0;
     end
     methods
-        function this = ProblemAM(b)
-            this = this@ProblemSensitivityBase(b);
+        function this = ProblemAM(b, j, optO, method, bcType, d)
+            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d);
             this.initPrime();
         end
         function initPrime(this)

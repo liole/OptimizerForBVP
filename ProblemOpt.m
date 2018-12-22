@@ -6,8 +6,8 @@ classdef ProblemOpt < ProblemAM
        uSol = {}
     end
     methods
-        function this = ProblemOpt(b)
-            this = this@ProblemAM(b);
+        function this = ProblemOpt(b, j, optO, method, bcType, d)
+            this = this@ProblemAM(b, j, optO, method, bcType, d);
         end
         function initConstraints(this)
             sol = Problem(this.b).direct();
