@@ -106,17 +106,19 @@ end
 bcType = [left_constraint; right_constraint];
 d = [str2double(handles.left_d.String) str2double(handles.right_d.String)]; % boundary condition values
 
-q = Problem(b0, j, optO, method, bcType, d);
+%TODO: get from form
+funcs = {'1', 'x^2', '2*x', 'sin(x)'};
+q = Problem(b0, j, optO, method, bcType, d, funcs);
 popup_sel_index = get(handles.problemMethod, 'Value');
 switch popup_sel_index
     case 1
-        q = Problem(b0, j, optO, method, bcType, d);
+        q = Problem(b0, j, optO, method, bcType, d, funcs);
     case 2
-        q = ProblemFDM(b0, j, optO, method, bcType, d);
+        q = ProblemFDM(b0, j, optO, method, bcType, d, funcs);
     case 3
-        q = ProblemAM(b0, j, optO, method, bcType, d);
+        q = ProblemAM(b0, j, optO, method, bcType, d, funcs);
     case 4
-        q = ProblemDDM(b0, j, optO, method, bcType, d);   
+        q = ProblemDDM(b0, j, optO, method, bcType, d, funcs);   
 end
 
 q.optimize(true, true);

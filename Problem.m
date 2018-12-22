@@ -25,16 +25,15 @@ classdef Problem < handle
         yd = 0 
         yMax = 1
         cacheBVP = {} % save direct problem solutions
+        funcStrings
     end
     methods
-        function this = Problem(b, j, optO, method, bcType, d)
+        function this = Problem(b, j, optO, method, bcType, d, funcs)
             if length(b) == 1 && strcmp(this.method, 'linear')
                 b = [b b];
             end
             this.b = b;
             this.b0 = b;
-            this.replaceU();
-            this.initConstraints();
             
             % for GUI
             this.j = j;
@@ -42,6 +41,18 @@ classdef Problem < handle
             this.method = method;
             this.bcType = bcType;
             this.d = d;
+            this.parseFuncs(funcs);
+            
+            this.replaceU();
+            this.initConstraints();
+        end
+        function parseFuncs(this, funcs)
+            syms x;
+            this.funcStrings = funcs;
+            this.r  = matlabFunction(eval(funcs{1}), 'Vars', x);
+            this.g1 = matlabFunction(eval(funcs{2}), 'Vars', x);
+            this.g3 = matlabFunction(eval(funcs{3}), 'Vars', x);
+            this.fu = matlabFunction(eval(funcs{4}), 'Vars', x);
         end
         function replaceU(this)
            params = {this.r, this.g1, this.g3, this.fu}; 
