@@ -77,8 +77,8 @@ varargout{1} = handles.output;
 function calculate_Callback(hObject, eventdata, handles)
 b0 = [0 0 0];
 
-j = handles.jVal.Value;    % index of u in [r g1 g3 fu]
-optO = handles.optOVal.Value; % index of Omega to minimize on
+j = str2double(handles.jVal.String);    % index of u in [r g1 g3 fu]
+optO = str2double(handles.optOVal.String); % index of Omega to minimize on
 method = 'linear';
 
 if (handles.constant.Value == 1)
@@ -98,7 +98,7 @@ if (handles.left_neuman.Value == 1)
 end
 
 bcType = [left_constraint; right_constraint];
-d = [handles.left_d.Value handles.right_d.Value]; % boundary condition values
+d = [str2double(handles.left_d.String) str2double(handles.right_d.String)]; % boundary condition values
 
  q = Problem(b0, j, optO, method, bcType, d);
  q.optimize(true, true);
