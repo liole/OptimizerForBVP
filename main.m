@@ -2,7 +2,7 @@ clear;
 tic;
 
 
-b0 = [0 0 0];
+b0 = [0 0];
 j = 4;    % index of u in [r g1 g3 fu]
 optO = 2; % index of Omega to minimize on
 method = 'constant'; % linear or constant
@@ -14,5 +14,6 @@ q.optimize(true, true);
 format long
 q.criteria()
 q.constraint()
+q.b
 toc;
 plot2(q);

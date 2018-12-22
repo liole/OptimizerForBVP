@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 22-Dec-2018 19:51:36
+% Last Modified by GUIDE v2.5 22-Dec-2018 20:59:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -75,7 +75,12 @@ varargout{1} = handles.output;
 
 % --- Executes on button press in calculate.
 function calculate_Callback(hObject, eventdata, handles)
-b0 = [0 0 0];
+x = get(handles.bInit,'String')
+while strfind(x, '  ')
+%% while contains(x, '  ')%% use this for versions of matlab 2016b+
+  x = strrep(x, '  ', ' ');
+end
+b0 =str2double(strsplit(x,' '))
 
 j = get(handles.opt_func, 'Value');% index of u in [r g1 g3 fu]
 optO = get(handles.optO_menu, 'Value');
@@ -115,6 +120,11 @@ switch popup_sel_index
 end
 
 q.optimize(true, true);
+% str=strcat('Optimal criteria = ',mat2str(q.criteria()),sprintf('\n'),'Optimal contraint = ',mat2str(q.constraint()));
+
+str = sprintf('Optimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n', mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b) );
+set(handles.result, 'String', str);
+
 plot2(q);
 
 
@@ -264,6 +274,29 @@ function optO_menu_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function bInit_Callback(hObject, eventdata, handles)
+% hObject    handle to bInit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of bInit as text
+%        str2double(get(hObject,'String')) returns contents of bInit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function bInit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to bInit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
