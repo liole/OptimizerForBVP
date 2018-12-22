@@ -1,7 +1,7 @@
 classdef ProblemDDM < ProblemSensitivityBase
     methods
-        function this = ProblemDDM(b, j, optO, method, bcType, d)
-            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d);
+        function this = ProblemDDM(b, j, optO, method, bcType, d, funcs)
+            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs);
         end
         
         function dm = odeDDM(this, x, m, i)

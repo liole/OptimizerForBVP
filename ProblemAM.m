@@ -3,8 +3,8 @@ classdef ProblemAM < ProblemSensitivityBase
        rPrime = @(x) 0;
     end
     methods
-        function this = ProblemAM(b, j, optO, method, bcType, d)
-            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d);
+        function this = ProblemAM(b, j, optO, method, bcType, d, funcs)
+            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs);
             this.initPrime();
         end
         function initPrime(this)
@@ -16,10 +16,11 @@ classdef ProblemAM < ProblemSensitivityBase
                      this.rPrime = @(x) this.interpolate(...
                          x, val, 'constant');
                  end
-            %else
-            %    rSym = sym(this.r);
-            %    rPrimeSym = diff(rSym);
-            %    this.rPrime = matlabFunction(rPrimeSym);
+            else
+                rSym = sym(this.r);
+                rPrimeSym = diff(rSym);
+                syms x;
+                this.rPrime = matlabFunction(rPrimeSym, 'Vars', x);
             end
         end
         function oIndex = psiOmega(this, i)
