@@ -1,18 +1,24 @@
-function plot2(problem, myTitle)
+function plot2(problem, myTitle, axU, axY)
     x = linspace(problem.x0, problem.xE, 500);
     y = problem.y(x);
     p0 = Problem(problem.b0, problem.j, problem.optO, problem.method, problem.bcType, problem.d, problem.funcStrings);
     y0 = p0.y(x);
     
     tName = '';
-    if nargin == 3
+    if nargin == 2
         tName = [myTitle ': '];
     end
-    figure('Name', sprintf('%sPsi0 = %f; Psi1 = %f', tName,...
-       problem.criteria(), problem.constraint()));
-    %       'Position', [0 0 500 1000]);
+    if nargin ~= 4
+        figure('Name', sprintf('%sPsi0 = %f; Psi1 = %f', tName,...
+           problem.criteria(), problem.constraint()));
+        %       'Position', [0 0 500 1000]);
+    end
     
-    subplot(3, 1, 1);
+    if nargin < 3
+        subplot(3, 1, 1);
+    else
+        axes(axU);
+    end
     hold on
     %plot(problem.Omega, repmat(problem.uMin,1,2), '--');
     %plot(problem.Omega, repmat(problem.uMax,1,2), '--');
@@ -22,7 +28,11 @@ function plot2(problem, myTitle)
     xlabel(' ')
     title('Control function');
     
-    subplot(3, 1, [2 3]); 
+    if nargin < 4
+        subplot(3, 1, [2 3]);
+    else
+        axes(axY);
+    end
     hold on
     plot(x, y0, 'g');
     plot(x, y);
