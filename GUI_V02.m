@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 22-Dec-2018 23:38:53
+% Last Modified by GUIDE v2.5 25-Dec-2018 17:20:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -133,7 +133,11 @@ set(handles.result, 'String', initStr);
 drawnow;
 
 tic;
-q.optimize(true, true);
+if get(handles.checkboxConstr, 'Value') == 1
+    q.optimize(true, true);
+else
+    q.optimize(false, true);
+end
 calcTime = toc;
 
 if popup_sel_index == 1
@@ -323,3 +327,12 @@ function fu_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkboxConstr.
+function checkboxConstr_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxConstr (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxConstr
