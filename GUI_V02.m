@@ -124,10 +124,13 @@ initStr = sprintf('Initial criteria = %s\n  Initial constraint = %s\n', mat2str(
 set(handles.result, 'String', initStr);
 drawnow;
 
+tic
 q.optimize(true, true);
+calcTime = toc
 % str=strcat('Optimal criteria = ',mat2str(q.criteria()),sprintf('\n'),'Optimal contraint = ',mat2str(q.constraint()));
 
-str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n', initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b) );
+str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n Calculation time = %s s\n',...
+    initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b), num2str(calcTime,'%.2f'));
 set(handles.result, 'String', str);
 
 plot2(q);
