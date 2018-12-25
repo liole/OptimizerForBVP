@@ -147,7 +147,7 @@ end
 
 str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n Gradient at optimal point = %s\n\n Optimization time = %s s\n',...
     initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b),mat2str(gradOptimal), num2str(calcTime,'%.2f'));
-
+    
 set(handles.result, 'String', str);
 
 plot2(q);
