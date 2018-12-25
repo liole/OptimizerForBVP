@@ -120,21 +120,37 @@ switch popup_sel_index
         q = ProblemDDM(b0, j, optO, method, bcType, d, funcs);   
 end
 
-initStr = sprintf('Initial criteria = %s\n  Initial constraint = %s\n', mat2str(q.criteria()),mat2str(q.constraint()));
+if popup_sel_index == 1
+    q2 = ProblemFDM(b0, j, optO, method, bcType, d, funcs);
+    gradInitial = q2.Gradient(0);
+else
+    gradInitial = q.Gradient(0);
+end
+
+initStr = sprintf('Initial criteria = %s\n  Initial constraint = %s\n\n Gradient at initial point = %s\n',...
+    mat2str(q.criteria()),mat2str(q.constraint()), mat2str(gradInitial));
 set(handles.result, 'String', initStr);
 drawnow;
 
-tic
+tic;
 q.optimize(true, true);
-calcTime = toc
+calcTime = toc;
+
+if popup_sel_index == 1
+    q3 = ProblemFDM(q.b, j, optO, method, bcType, d, funcs);
+    gradOptimal = q3.Gradient(0);
+else
+    gradOptimal = q.Gradient(0);
+end
+    
 % str=strcat('Optimal criteria = ',mat2str(q.criteria()),sprintf('\n'),'Optimal contraint = ',mat2str(q.constraint()));
 
-str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n Calculation time = %s s\n',...
-    initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b), num2str(calcTime,'%.2f'));
+str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n Gradient at optimal point = %s\n\n Optimization time = %s s\n',...
+    initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b),mat2str(gradOptimal), num2str(calcTime,'%.2f'));
+    
 set(handles.result, 'String', str);
 
 plot2(q);
-
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
