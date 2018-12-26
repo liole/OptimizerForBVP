@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 25-Dec-2018 23:14:43
+% Last Modified by GUIDE v2.5 26-Dec-2018 19:40:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,7 +57,8 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-updatePlot(handles)
+title(handles.control, 'Control function')
+title(handles.state, 'State function')
 
 % UIWAIT makes GUI_V02 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -129,7 +130,7 @@ else
 end
 
 initStr = sprintf('Initial criteria   = %s\n        constraint = %s\n        gradient   = %s\n',...
-    mat2str(q.criteria()), num2str(q.constraint()), mat2str(grad, 4));
+    mat2str(q.criteria()), mat2str(q.constraint()), mat2str(grad, 4));
 set(handles.result, 'String', initStr);
 
 function setFullInfo(handles, q, time)
@@ -138,14 +139,14 @@ initStr = sprintf('%s\n%s\n%s\n\n',initStr(1,:),initStr(2,:),initStr(3,:));
 
 popup_sel_index = get(handles.problemMethod, 'Value');
 if popup_sel_index == 1
-    q2 = ProblemFDM(q.b0, q.j, q.optO, q.method, q.bcType, q.d, q.funcStrings);
+    q2 = ProblemFDM(q.b, q.j, q.optO, q.method, q.bcType, q.d, q.funcStrings);
     grad = q2.Gradient(0);
 else
     grad = q.Gradient(0);
 end
 
-optStr = sprintf('Optimal criteria   = %s\n        constraint = %s\n        gradient   = %s\n\nTime elapsed: %.3f s',...
-    mat2str(q.criteria()), num2str(q.constraint()), mat2str(grad, 4), time);
+optStr = sprintf('Optimal criteria   = %s\n        constraint = %s\n        gradient   = %s\n        point      = %s\nTime elapsed: %.3f s',...
+    mat2str(q.criteria()), mat2str(q.constraint()), mat2str(grad, 4), mat2str(q.b, 4),time);
 set(handles.result, 'String', [initStr optStr]);
 
 function updatePlot(handles)
@@ -194,7 +195,6 @@ switch j
     case 4
         handles.fu.Enable = 'off';
 end
-updatePlot(handles)
 
 % --- Executes on selection change in optO_menu.
 function updatePlot_Callback(hObject, eventdata, handles)
