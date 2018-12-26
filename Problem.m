@@ -27,6 +27,7 @@ classdef Problem < handle
         cacheBVP = {} % save direct problem solutions
         funcStrings
         isKSelected=true
+        optOut
     end
     methods
         function this = Problem(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected)
@@ -51,6 +52,7 @@ classdef Problem < handle
             this.gammaU = gammaU;
             this.p = [p1 p2];
             this.isKSelected=isKSelected;
+            this.replaceU();
             if(isKSelected)
                 this.k = k;
                 this.initConstraints();
@@ -58,7 +60,6 @@ classdef Problem < handle
                 this.yd=yd;
                 this.yMax=yMax;
             end            
-            this.replaceU();
             
         end
         function parseFuncs(this, funcs)
@@ -201,14 +202,15 @@ classdef Problem < handle
             options = this.optOptions();
             
             if yConstraint || bConstraint
-                b = fmincon(        ...
+                [b,fval,exitflag,output,lambda,grad,hessian] = fmincon(        ...
                     @this.optCriteria,...
                     this.b,        ...
                     [],[],[],[],    ... % no linear constraints
                     bLower, bUpper, ...
                     nonLinCon,      ...
                     options         ...
-                );
+                )
+                this.optOut = output;
             else
                 b = fminunc(@this.optCriteria, this.b, options);
             end

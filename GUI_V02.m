@@ -163,8 +163,8 @@ else
     grad = q.Gradient(0);
 end
 
-optStr = sprintf('Optimal criteria   = %s\n        constraint = %s\n        gradient   = %s\n        point      = %s\nTime elapsed: %.3f s',...
-    mat2str(q.criteria()), mat2str(q.constraint()), mat2str(grad, 4), mat2str(q.b, 4),time);
+optStr = sprintf('Optimal criteria   = %s\n        constraint = %s\n        gradient   = %s\n        point      = %s\nTime elapsed: %.3f s (%s iterations)',...
+    mat2str(q.criteria()), mat2str(q.constraint()), mat2str(grad, 4), mat2str(q.b, 4),time, num2str(q.optOut.iterations));
 set(handles.result, 'String', [initStr optStr]);
 
 function updatePlot(handles)
@@ -416,7 +416,9 @@ function kParam_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of kParam
-
+handles.k.Enable = 'on';
+handles.yd.Enable = 'off';
+handles.yMax.Enable = 'off';
 
 % --- Executes on button press in yParams.
 function yParams_Callback(hObject, eventdata, handles)
@@ -425,7 +427,9 @@ function yParams_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of yParams
-
+handles.k.Enable = 'off';
+handles.yd.Enable = 'on';
+handles.yMax.Enable = 'on';
 
 
 function yd_Callback(hObject, eventdata, handles)
