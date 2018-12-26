@@ -22,7 +22,7 @@ function varargout = GUI_V02(varargin)
 
 % Edit the above text to modify the response to help GUI_V02
 
-% Last Modified by GUIDE v2.5 25-Dec-2018 17:20:02
+% Last Modified by GUIDE v2.5 25-Dec-2018 23:14:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,7 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+updatePlot(handles)
 
 % UIWAIT makes GUI_V02 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -72,15 +73,13 @@ function varargout = GUI_V02_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-
-% --- Executes on button press in calculate.
-function calculate_Callback(hObject, eventdata, handles)
-x = get(handles.bInit,'String')
+function q = getProblem(handles)
+x = get(handles.bInit,'String');
 while strfind(x, '  ')
 %% while contains(x, '  ')%% use this for versions of matlab 2016b+
   x = strrep(x, '  ', ' ');
 end
-b0 =str2double(strsplit(x,' '))
+b0 =str2double(strsplit(x,' '));
 
 j = get(handles.opt_func, 'Value');% index of u in [r g1 g3 fu]
 optO = get(handles.optO_menu, 'Value');
@@ -120,16 +119,49 @@ switch popup_sel_index
         q = ProblemDDM(b0, j, optO, method, bcType, d, funcs);   
 end
 
+function setInitialInfo(handles, q)
+popup_sel_index = get(handles.problemMethod, 'Value');
 if popup_sel_index == 1
-    q2 = ProblemFDM(b0, j, optO, method, bcType, d, funcs);
-    gradInitial = q2.Gradient(0);
+    q2 = ProblemFDM(q.b0, q.j, q.optO, q.method, q.bcType, q.d, q.funcStrings);
+    grad = q2.Gradient(0);
 else
-    gradInitial = q.Gradient(0);
+    grad = q.Gradient(0);
 end
 
-initStr = sprintf('Initial criteria = %s\n  Initial constraint = %s\n\n Gradient at initial point = %s\n',...
-    mat2str(q.criteria()),mat2str(q.constraint()), mat2str(gradInitial));
+initStr = sprintf('Initial criteria   = %s\n        constraint = %s\n        gradient   = %s\n',...
+    mat2str(q.criteria()), num2str(q.constraint()), mat2str(grad, 4));
 set(handles.result, 'String', initStr);
+
+function setFullInfo(handles, q, time)
+initStr = get(handles.result, 'String');
+initStr = sprintf('%s\n%s\n%s\n\n',initStr(1,:),initStr(2,:),initStr(3,:));
+
+popup_sel_index = get(handles.problemMethod, 'Value');
+if popup_sel_index == 1
+    q2 = ProblemFDM(q.b0, q.j, q.optO, q.method, q.bcType, q.d, q.funcStrings);
+    grad = q2.Gradient(0);
+else
+    grad = q.Gradient(0);
+end
+
+optStr = sprintf('Optimal criteria   = %s\n        constraint = %s\n        gradient   = %s\n\nTime elapsed: %.3f s',...
+    mat2str(q.criteria()), num2str(q.constraint()), mat2str(grad, 4), time);
+set(handles.result, 'String', [initStr optStr]);
+
+function updatePlot(handles)
+q = getProblem(handles);
+cla(handles.control);
+cla(handles.state);
+plot2(q,'', handles.control, handles.state);
+setInitialInfo(handles, q);
+
+
+% --- Executes on button press in calculate.
+function calculate_Callback(hObject, eventdata, handles)
+
+q = getProblem(handles);
+
+setInitialInfo(handles, q);
 drawnow;
 
 tic;
@@ -140,37 +172,11 @@ else
 end
 calcTime = toc;
 
-if popup_sel_index == 1
-    q3 = ProblemFDM(q.b, j, optO, method, bcType, d, funcs);
-    gradOptimal = q3.Gradient(0);
-else
-    gradOptimal = q.Gradient(0);
-end
-    
-% str=strcat('Optimal criteria = ',mat2str(q.criteria()),sprintf('\n'),'Optimal contraint = ',mat2str(q.constraint()));
+setFullInfo(handles, q, calcTime);
 
-str = sprintf('%s\nOptimal criteria = %s\n  Optimal constraint = %s\n bOptimal = %s\n Gradient at optimal point = %s\n\n Optimization time = %s s\n',...
-    initStr, mat2str(q.criteria()),mat2str(q.constraint()),mat2str(q.b),mat2str(gradOptimal), num2str(calcTime,'%.2f'));
-    
-set(handles.result, 'String', str);
-
-plot2(q);
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-set(hObject, 'Value', 0);
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on key press with focus on calculate and none of its controls.
-function calculate_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to calculate (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
-% handles    structure with handles and user data (see GUIDATA)
+cla(handles.control);
+cla(handles.state);
+plot2(q,'', handles.control, handles.state);
 
 function opt_func_Callback(hObject, eventdata, handles)
 handles.r.Enable = 'on';
@@ -188,151 +194,14 @@ switch j
     case 4
         handles.fu.Enable = 'off';
 end
+updatePlot(handles)
 
-% --- Executes during object creation, after setting all properties.
-function uibuttongroup1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to uibuttongroup1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% --- Executes during object creation, after setting all properties.
-function right_d_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to right_d (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function left_d_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to left_d (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function figure1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% --- Executes during object creation, after setting all properties.
-function uipanel1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to uipanel1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% --- Executes during object creation, after setting all properties.
-function problemMethod_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to problemMethod (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function opt_func_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to opt_func (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function optO_menu_CreateFcn(hObject, eventdata, handles)
+% --- Executes on selection change in optO_menu.
+function updatePlot_Callback(hObject, eventdata, handles)
 % hObject    handle to optO_menu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function bInit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to bInit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function r_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to g3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function g1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to g3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function g3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to g3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function fu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to fu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in checkboxConstr.
-function checkboxConstr_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxConstr (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkboxConstr
+% Hints: contents = cellstr(get(hObject,'String')) returns optO_menu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from optO_menu
+updatePlot(handles)
