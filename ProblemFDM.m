@@ -1,7 +1,7 @@
 classdef ProblemFDM < ProblemSensitivityBase
     methods
-        function this = ProblemFDM(b, j, optO, method, bcType, d, funcs)
-            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs);
+        function this = ProblemFDM(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected)
+            this = this@ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected);
         end
         
         function grad = Gradient(this, index)
