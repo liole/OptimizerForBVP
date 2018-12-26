@@ -50,4 +50,7 @@ function plot2(problem, myTitle, axU, axY)
     hold off
     title('State function');
     xlabel('x');
+    if (any(problem.b0 ~= problem.b))
+        legend({'Initial', 'Optimal'}, 'Location', 'southeast');
+    end
 end
