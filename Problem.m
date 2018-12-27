@@ -26,9 +26,11 @@ classdef Problem < handle
         yMax = 1
         cacheBVP = {} % save direct problem solutions
         funcStrings
+        isKSelected=true
+        optOut
     end
     methods
-        function this = Problem(b, j, optO, method, bcType, d, funcs)
+        function this = Problem(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected)
             if length(b) == 1 && strcmp(this.method, 'linear')
                 b = [b b];
             end
@@ -42,9 +44,23 @@ classdef Problem < handle
             this.bcType = bcType;
             this.d = d;
             this.parseFuncs(funcs);
-            
+            this.x0 = x0;
+            this.xE = xE;
+            this.uMin = uMin;
+            this.uMax = uMax;
+            this.gammaY = gammaY;
+            this.gammaU = gammaU;
+            this.p = [p1 p2];
+            this.isKSelected=isKSelected;
             this.replaceU();
-            this.initConstraints();
+            if(isKSelected)
+                this.k = k;
+                this.initConstraints();
+            else
+                this.yd=yd;
+                this.yMax=yMax;
+            end            
+            
         end
         function parseFuncs(this, funcs)
             syms x;
@@ -186,14 +202,15 @@ classdef Problem < handle
             options = this.optOptions();
             
             if yConstraint || bConstraint
-                b = fmincon(        ...
+                [b,fval,exitflag,output,lambda,grad,hessian] = fmincon(        ...
                     @this.optCriteria,...
                     this.b,        ...
                     [],[],[],[],    ... % no linear constraints
                     bLower, bUpper, ...
                     nonLinCon,      ...
                     options         ...
-                );
+                )
+                this.optOut = output;
             else
                 b = fminunc(@this.optCriteria, this.b, options);
             end

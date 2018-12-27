@@ -1,7 +1,9 @@
 function plot2(problem, myTitle, axU, axY)
     x = linspace(problem.x0, problem.xE, 500);
     y = problem.y(x);
-    p0 = Problem(problem.b0, problem.j, problem.optO, problem.method, problem.bcType, problem.d, problem.funcStrings);
+    p0 = Problem(problem.b0, problem.j, problem.optO, problem.method, problem.bcType, problem.d,...
+        problem.funcStrings,problem.gammaU,problem.gammaY,problem.x0,problem.xE,problem.uMin,problem.uMax,...
+        problem.p(1),problem.p(2),problem.k,problem.yd,problem.yMax,problem.isKSelected);
     y0 = p0.y(x);
     
     tName = '';

@@ -6,8 +6,8 @@ classdef (Abstract) ProblemSensitivityBase < Problem
         cacheSens = {}
     end
     methods
-        function this = ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs)
-            this = this@Problem(b, j, optO, method, bcType, d, funcs);
+        function this = ProblemSensitivityBase(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected)
+            this = this@Problem(b, j, optO, method, bcType, d, funcs,gammaU,gammaY,x0,xE,uMin,uMax,p1,p2,k,yd,yMax,isKSelected);
         end
         function updateControl(this, b)
             this.updateControl@Problem(b);
