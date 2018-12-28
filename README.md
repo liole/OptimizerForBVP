@@ -17,11 +17,12 @@ With constraints
 
 To open GUI, run `GUI_V02.m` in MATLAB environment
 
+
 Fields for model parameters support functions of variable *x* as values
 
-After changing some model-ralted parameters, leave the field and wait up to 1 second to see the updated results for direct problem (some numerical info and plot). 
+After changing some model-ralted parameters, press the button to see updated results for direct problem (some numerical info and plot). 
 
-![image](https://user-images.githubusercontent.com/8505995/50445987-f3776a80-091a-11e9-8df4-cd474b1becb1.png)
+![image](https://user-images.githubusercontent.com/8505995/50459591-92c94b80-0975-11e9-92de-ad19517c04e3.png)
 
 ## Requirements
 MATLAB R2014b or higher.
